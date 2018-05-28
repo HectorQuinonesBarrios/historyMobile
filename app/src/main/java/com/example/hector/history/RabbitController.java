@@ -23,7 +23,7 @@ public class RabbitController {
 
     ConnectionFactory factory = new ConnectionFactory();
     RabbitController() {
-        String uri = "amqp://sxvsjtcd:mOrhabcXKa3-tm7AxgOR19ZVtza3DDPO@emu.rmq.cloudamqp.com/sxvsjtcd";
+        String uri = "amqp://dtnjyulk:yJ27rs4eQUW1ek6URIP35iR6MDgpgSvT@wasp.rmq.cloudamqp.com/dtnjyulk";
         try {
             factory.setAutomaticRecoveryEnabled(false);
             factory.setUri(uri);
@@ -52,7 +52,7 @@ public class RabbitController {
                         while (true) {
                             String message = queue.takeFirst();
                             try{
-                                ch.basicPublish("amq.fanout", "chat", null, message.getBytes());
+                                ch.basicPublish("history", "chat", null, message.getBytes());
                                 Log.d("", "[s] " + message);
                                 ch.waitForConfirmsOrDie();
                             } catch (Exception e){
@@ -87,7 +87,7 @@ public class RabbitController {
                         Channel channel = connection.createChannel();
                         channel.basicQos(1);
                         AMQP.Queue.DeclareOk q = channel.queueDeclare();
-                        channel.queueBind(q.getQueue(), "amq.fanout", "chat");
+                        channel.queueBind(q.getQueue(), "history", "chat");
                         QueueingConsumer consumer = new QueueingConsumer(channel);
                         channel.basicConsume(q.getQueue(), true, consumer);
 

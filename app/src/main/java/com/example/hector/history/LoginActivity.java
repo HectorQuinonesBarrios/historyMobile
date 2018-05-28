@@ -1,31 +1,29 @@
 package com.example.hector.history;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-
-import android.content.Intent;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
-import butterknife.ButterKnife;
+import java.io.UnsupportedEncodingException;
+
 import butterknife.BindView;
-import cz.msebera.android.httpclient.entity.mime.Header;
+import butterknife.ButterKnife;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+
+    public static String user = "";
 
     @BindView(R.id.input_email) EditText _emailText;
     @BindView(R.id.input_password) EditText _passwordText;
@@ -74,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                 new Runnable() {
                     public void run() {
                         AsyncHttpClient client = new AsyncHttpClient();
-                        client.post("http://192.168.1.84:3000/login/android",params, new AsyncHttpResponseHandler() {
+                        client.post("https://history-board.herokuapp.com/login/android",params, new AsyncHttpResponseHandler() {
 
                             @Override
                             public void onStart() {
@@ -83,6 +81,12 @@ public class LoginActivity extends AppCompatActivity {
 
                             @Override
                             public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+
+                                try {
+                                    user = new String(responseBody, "UTF-8");
+                                } catch (UnsupportedEncodingException e) {
+                                    e.printStackTrace();
+                                }
                                 onLoginSuccess();
                                 progressDialog.dismiss();
                             }
@@ -122,6 +126,9 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
+        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+        intent.putExtra("user", user);
+        startActivity(intent);
         finish();
     }
 
